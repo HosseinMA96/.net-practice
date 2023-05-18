@@ -23,8 +23,9 @@ namespace ASPNETCoreApplication.Controllers
 
         }
 
+        //This method returns all employees
         [HttpGet]
-        [Route("getAllEmployees")]
+       // [Route("getAllEmployees")]
         public string GetEmployes()
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon").ToString());
@@ -63,8 +64,45 @@ namespace ASPNETCoreApplication.Controllers
             }
 
             return returning_result;
+        }
+
+        
+        //This method returns one employee with specific Empid
+        [HttpGet("{Empid}")]
+        public string GetSingleEmployee(int Empid)
+        {
+        
+
+            SqlConnection con = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon").ToString());
+            SqlDataAdapter da = new SqlDataAdapter($"SELECT * FROM Employees WHERE Empid = {Empid}", con);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+
+            Response response = new Response();
+            string returning_result = "";
+
+            if (dt.Rows.Count > 0)
+              {
+
+                
+                Employee employee = new Employee();
+                employee.Id = Convert.ToInt32(dt.Rows[0]["EmpId"]);
+                employee.Empname = Convert.ToString(dt.Rows[0]["EmpName"]);
+                employee.Password = Convert.ToString(dt.Rows[0]["Password"]);
 
 
+                returning_result = JsonConvert.SerializeObject(employee);
+              }
+            
+
+            else
+            {
+                response.StatusCodde = 100;
+                response.ErrorMessage = "No data found";
+                returning_result = JsonConvert.SerializeObject(response);
+            }
+
+            return returning_result;
         }
     }
 }
