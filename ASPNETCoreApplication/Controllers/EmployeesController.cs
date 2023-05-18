@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -131,13 +132,10 @@ namespace ASPNETCoreApplication.Controllers
 
                 var command = new SqlCommand(insert_command, con);
                 adapter.InsertCommand = new SqlCommand(insert_command, con);
-                Debug.WriteLine(insert_command);
 
 
-                Debug.WriteLine("PRE");
 
                 adapter.InsertCommand.ExecuteNonQuery();
-                Debug.WriteLine("POST");
 
                 command.Dispose();
 	        	con.Close();
@@ -158,5 +156,58 @@ namespace ASPNETCoreApplication.Controllers
             }
             return returning_result;
         }
+
+
+        [HttpDelete("{Empid}")]
+        public string DeleteEmployee(int Empid)
+        {
+
+            Response response = new Response();
+            var returning_result = "";
+
+            try
+            {
+                var get_str = GetSingleEmployee(Empid);
+                JObject get_json = JObject.Parse(get_str);
+                Debug.WriteLine(get_json);
+
+
+
+                SqlConnection con = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon").ToString());
+                con.Open();
+
+
+
+                var delete_command = $"DELETE FROM Employees WHERE EmpId = {Empid};";
+
+                SqlDataAdapter adapter = new SqlDataAdapter();
+
+                var command = new SqlCommand(delete_command, con);
+                adapter.DeleteCommand = new SqlCommand(delete_command, con);
+                //Debug.WriteLine(insert_command);
+
+                adapter.DeleteCommand.ExecuteNonQuery();
+
+                command.Dispose();
+                con.Close();
+
+                response.StatusCodde = 202;
+                response.ErrorMessage = "Employee deleted successfully.";
+                returning_result = JsonConvert.SerializeObject(response);
+
+
+
+            }
+
+            catch (Exception e)
+            {
+                response.StatusCodde = 404;
+                response.ErrorMessage = "Resource does not exist.";
+                returning_result = JsonConvert.SerializeObject(response);
+            }
+            return returning_result;
+        }
+
+
     }
 }
