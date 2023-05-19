@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using RestSharp;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -19,6 +20,7 @@ namespace ASPNETCoreApplication.Controllers
     public class EmployeesController : ControllerBase
     {
         public readonly IConfiguration _configuration;
+        public readonly string API_KEY = "36c56b9ade26441da11224304231805";
         public EmployeesController(IConfiguration configuration)
         {
 
@@ -28,7 +30,7 @@ namespace ASPNETCoreApplication.Controllers
 
         //This method returns all employees
         [HttpGet]
-       // [Route("getAllEmployees")]
+        // [Route("getAllEmployees")]
         public string GetEmployes()
         {
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon").ToString());
@@ -40,7 +42,7 @@ namespace ASPNETCoreApplication.Controllers
             Response response = new Response();
             string returning_result = "";
 
-            if (dt.Rows.Count > 0 )
+            if (dt.Rows.Count > 0)
             {
                 for (int i = 0; i < dt.Rows.Count; i++)
                 {
@@ -54,14 +56,14 @@ namespace ASPNETCoreApplication.Controllers
                 }
             }
 
-            if(employeeList.Count > 0 ) 
+            if (employeeList.Count > 0)
             {
-                returning_result =  JsonConvert.SerializeObject(employeeList);
+                returning_result = JsonConvert.SerializeObject(employeeList);
             }
 
             else
             {
-                response.StatusCodde = 100;
+                response.StatusCode = 100;
                 response.ErrorMessage = "No data found";
                 returning_result = JsonConvert.SerializeObject(response);
             }
@@ -69,12 +71,12 @@ namespace ASPNETCoreApplication.Controllers
             return returning_result;
         }
 
-        
+
         //This method returns one employee with specific Empid
         [HttpGet("{Empid}")]
         public string GetSingleEmployee(int Empid)
         {
-        
+
 
             SqlConnection con = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon").ToString());
             con.Open();
@@ -86,9 +88,9 @@ namespace ASPNETCoreApplication.Controllers
             string returning_result = "";
 
             if (dt.Rows.Count > 0)
-              {
+            {
 
-                
+
                 Employee employee = new Employee();
                 employee.EmpId = Convert.ToInt32(dt.Rows[0]["EmpId"]);
                 employee.Empname = Convert.ToString(dt.Rows[0]["EmpName"]);
@@ -96,12 +98,12 @@ namespace ASPNETCoreApplication.Controllers
 
 
                 returning_result = JsonConvert.SerializeObject(employee);
-              }
-            
+            }
+
 
             else
             {
-                response.StatusCodde = 100;
+                response.StatusCode = 100;
                 response.ErrorMessage = "No data found";
                 returning_result = JsonConvert.SerializeObject(response);
             }
@@ -120,11 +122,11 @@ namespace ASPNETCoreApplication.Controllers
 
             try
             {
-             
+
                 SqlConnection con = new SqlConnection(_configuration.GetConnectionString("EmployeeAppCon").ToString());
                 con.Open();
 
-          
+
 
                 var insert_command = $"INSERT INTO Employees (EmpId, EmpName, Password) VALUES  (\'{employee.EmpId}\', \'{employee.Empname}\', \'{employee.Password}\');";
 
@@ -138,9 +140,9 @@ namespace ASPNETCoreApplication.Controllers
                 adapter.InsertCommand.ExecuteNonQuery();
 
                 command.Dispose();
-	        	con.Close();
+                con.Close();
 
-                response.StatusCodde = 200;
+                response.StatusCode = 200;
                 response.ErrorMessage = "Employee added successfully";
                 returning_result = JsonConvert.SerializeObject(response);
 
@@ -150,7 +152,7 @@ namespace ASPNETCoreApplication.Controllers
 
             catch (Exception e)
             {
-                response.StatusCodde = 500;
+                response.StatusCode = 500;
                 response.ErrorMessage = "Failed to add to database";
                 returning_result = JsonConvert.SerializeObject(response);
             }
@@ -161,6 +163,10 @@ namespace ASPNETCoreApplication.Controllers
         [HttpDelete("{Empid}")]
         public string DeleteEmployee(int Empid)
         {
+
+            Debug.WriteLine("I GOT CALLED");
+
+            Thread.Sleep(50000);
 
             Response response = new Response();
             var returning_result = "";
@@ -191,7 +197,7 @@ namespace ASPNETCoreApplication.Controllers
                 command.Dispose();
                 con.Close();
 
-                response.StatusCodde = 202;
+                response.StatusCode = 202;
                 response.ErrorMessage = "Employee deleted successfully.";
                 returning_result = JsonConvert.SerializeObject(response);
 
@@ -201,13 +207,11 @@ namespace ASPNETCoreApplication.Controllers
 
             catch (Exception e)
             {
-                response.StatusCodde = 404;
+                response.StatusCode = 404;
                 response.ErrorMessage = "Resource does not exist.";
                 returning_result = JsonConvert.SerializeObject(response);
             }
             return returning_result;
         }
-
-
     }
 }
