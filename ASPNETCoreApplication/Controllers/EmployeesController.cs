@@ -166,8 +166,6 @@ namespace ASPNETCoreApplication.Controllers
 
             Debug.WriteLine("I GOT CALLED");
 
-            Thread.Sleep(50000);
-
             Response response = new Response();
             var returning_result = "";
 
@@ -176,6 +174,27 @@ namespace ASPNETCoreApplication.Controllers
                 var get_str = GetSingleEmployee(Empid);
                 JObject get_json = JObject.Parse(get_str);
                 Debug.WriteLine(get_json);
+
+                if (get_json.ContainsKey("StatusCode"))
+                {
+                    JToken get_employee_response = get_json["StatusCode"];
+                    Debug.WriteLine(get_employee_response);
+
+                    int get_employee_response_code = (int)get_employee_response;
+
+                    if (get_employee_response_code == 100)
+                    {
+                        response.StatusCode = 404;
+                        response.ErrorMessage = "Employee does not exist.";
+                        returning_result = JsonConvert.SerializeObject(response);
+                        return returning_result;
+
+                    }
+                }
+
+           
+
+
 
 
 

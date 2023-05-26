@@ -2,7 +2,7 @@
 {
     public class Response
     {
-        public int StatusCodde { get; set; }
+        public int StatusCode { get; set; }
         public string ErrorMessage { get; set; }
     }
 }

@@ -50,6 +50,7 @@ namespace ASPNETCoreApplication.Controllers
                 };
                 return jsonObject.ToString();
             }
-       
+        //https://www.weatherapi.com/my/
+        //https://www.weatherapi.com/docs/
     }
 }
