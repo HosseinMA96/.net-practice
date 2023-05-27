@@ -5,6 +5,7 @@ In this repository I will create a .Net Core Web API to practice for my internsh
 
 | Task  | Address |
 | ------------- | ------------- |
+| Main page  | http://localhost:5173  |
 | Add single employee  | http://localhost:5173/single  |
 | Delete employee by Empid Cell  | http://localhost:5173/delete  |
 | Get all employees  | http://localhost:5173/all  |
