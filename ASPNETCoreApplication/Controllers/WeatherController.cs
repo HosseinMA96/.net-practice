@@ -13,44 +13,63 @@ namespace ASPNETCoreApplication.Controllers
     [ApiController]
     public class WeatherController
     {
-            readonly IConfiguration _configuration;
-            public readonly string API_KEY = "36c56b9ade26441da11224304231805";
-            public WeatherController(IConfiguration configuration)
+        readonly IConfiguration _configuration;
+        public readonly string API_KEY = "36c56b9ade26441da11224304231805";
+        public WeatherController(IConfiguration configuration)
+        {
+
+            _configuration = configuration;
+
+        }
+
+
+        [HttpGet("{CityName}")]
+        public string GetWeather(string CityName)
+        {
+            string request_url = $"http://api.weatherapi.com/v1/current.json?key={API_KEY}&q={CityName}";
+
+            var client = new RestClient(request_url);
+            var response = client.Execute(new RestRequest());
+
+            string jsonResponse = JsonConvert.SerializeObject(response);
+            JObject json = JObject.Parse(jsonResponse);
+
+            // JToken propertyValue = json["current"];
+            //IList<string> keys = json.Properties().Select(p => p.Name).ToList();
+            //Debug.WriteLine(String.Join("\n", keys));
+            Debug.WriteLine(json);
+            bool valid = false;
+
+            if (json.ContainsKey("Content"))
             {
 
-                _configuration = configuration;
-
-            }
-
-          
-            [HttpGet("{CityName}")]
-            public string GetWeather(string CityName)
-            {
-                string request_url = $"http://api.weatherapi.com/v1/current.json?key={API_KEY}&q={CityName}";
-
-                var client = new RestClient(request_url);
-                var response = client.Execute(new RestRequest());
-
-                string jsonResponse = JsonConvert.SerializeObject(response);
-                JObject json = JObject.Parse(jsonResponse);
-
-                // JToken propertyValue = json["current"];
-                //IList<string> keys = json.Properties().Select(p => p.Name).ToList();
-                //Debug.WriteLine(String.Join("\n", keys));
                 JToken interest = JToken.Parse(json["Content"].ToString());
 
                 // Debug.WriteLine(interest["current"]["temp_c"]);
                 // Debug.WriteLine(interest["current"]);
-                JObject jsonObject = new JObject
-                {
-                    ["temperature"] = interest["current"]["temp_c"],
-                    ["wind"] = interest["current"]["wind_kph"],
-                    ["gust"] = interest["current"]["gust_kph"],
 
-                };
-                return jsonObject.ToString();
+                if (interest.SelectToken("current") != null )
+                {
+
+                    JObject jsonObject = new JObject
+                    {
+                        ["temperature"] = interest["current"]["temp_c"],
+                        ["wind"] = interest["current"]["wind_kph"],
+                        ["gust"] = interest["current"]["gust_kph"],
+
+                    };
+                    valid = true;
+                    return jsonObject.ToString();
+                }
             }
-        //https://www.weatherapi.com/my/
-        //https://www.weatherapi.com/docs/
-    }
+
+         
+            return "ERROR";
+            }
+
+
+            //https://www.weatherapi.com/my/
+            //https://www.weatherapi.com/docs/
+        }
 }
+

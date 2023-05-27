@@ -3,13 +3,32 @@
   <p>{{ description }}</p>
   <form v-on:submit.prevent="action">
   <p>
-    Enter employee id?
-    <input type="text" required placeholder="Employee id ..." v-model="employeeId">
+    Enter city name?
+    <input type="text" required placeholder="City name ..." v-model="cityName">
   </p>
-  <button type="submit">Delete employee</button>
+  
+
+  <button type="submit">Get weather</button>
   </form>
 
-  <p v-show="results">{{ msg }}</p>
+  <br><br>
+    <table  v-show="results">
+  <thead>
+    <tr>
+      <th>temp</th>
+      <th>gust</th>
+      <th>wind</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr v-if='results'>
+      <td>{{msg.temp}}</td>
+      <td>{{msg.gust}}</td>
+      <td>{{msg.wind}}</td>
+    </tr>
+  </tbody>
+</table>
+<p v-show="blank">No such city</p>
 
 </template>
 
@@ -18,27 +37,35 @@ import axios from 'axios';
 export default {
 data() {
   return {
-      header: 'Delete an employee',
-      description: 'Delete an employee given its Empid',
+      header: 'Get weather of a city',
+      description: 'Get temperature and wind of a city',
+      data: null,
+      cityName: null,
+      msg: false,
       results: false,
-      msg: 'null',
-      data: null
+      blank: null
   }
 },
 methods: {
 async action() {
 
-    const response = await axios.delete("https://localhost:7133/api/Employees/" + this.employeeId);
-    this.data = response.data
-    console.log(response.data) 
-    this.results = true
-    if (this.data.StatusCode == 404)
-      this.msg = 'Employee doesn\'t exist'
+    //console.log(this.employeeId + ' ' + this.employeeName + ' ' + this.password)
+    const response = await axios.get('https://localhost:7133/api/Weather/' + this.cityName);
     
-      else
-      this.msg = 'Employee successfully deleted'
+    if (response.data == "ERROR")
+    {
+      this.msg = "City doesn\'t exist"
+      this.blank = true
+      this.results= false
+    }
+    
+    else{
+      this.results = true
+      this.msg = {temp: response.data.temperature, gust:  response.data.gust,  wind:  response.data.wind }
+    }
+    console.log(response.data)
 
-  }
+}
 }
 };
 </script>
