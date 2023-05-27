@@ -13,3 +13,4 @@ In this repository I will create a .Net Core Web API to practice for my internsh
 Adress depends on your vue port.
 
 The first three APIs manipulate a MSSQL database table of employees. The last API calls a 3rd party weather API and returns a subset of response as its response.
+Refer to Demo folder for screenshots of the App.
