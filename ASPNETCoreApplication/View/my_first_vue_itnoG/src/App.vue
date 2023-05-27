@@ -2,17 +2,36 @@
 
   <p>Choose what part of this page you want to see:</p>
   <router-link to="/weather">Weather</router-link><br>
-  <router-link to="/add">Add</router-link><br>
+  <router-link to="/add" >Add</router-link><br>
   <router-link to="/delete">Delete</router-link><br>
-  <router-link to="/all">All</router-link><br>
+  <router-link to="/all" >All</router-link><br>
   <router-link to="/single">single</router-link><br>
-   <div>
+   <div v-show="show">
    <router-view></router-view>
    </div>
 </template>
 
 
- 
+<script>
+import axios from 'axios';
+export default {
+data() {
+    return {
+      show:false
+    }
+},
+computed: 
+{
+  show(){
+   
+    return this.$route.path != '/'
+
+  }
+}
+}
+</script>
+
+
 <style>
 #red {
 font-weight: bold;
@@ -30,6 +49,7 @@ display: inline-block;
 font-size: 16px;
 
 }
+
 
 button:hover {
 background-color: #4CAF50; /* Green */
